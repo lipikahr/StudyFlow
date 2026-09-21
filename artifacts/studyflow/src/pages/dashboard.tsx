@@ -31,6 +31,16 @@ function getGreeting() {
   return 'Good evening';
 }
 
+function getTodayLabel() {
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'Asia/Calcutta',
+  }).format(new Date());
+}
+
 function TaskRow({ task, onToggle, onEdit, onDelete, deleting }: { task: Task; onToggle: () => void; onEdit: () => void; onDelete: () => void; deleting: boolean }) {
   const meta = categoryMeta[task.category];
   return (
@@ -126,7 +136,7 @@ export default function Dashboard() {
       </aside>
       {mobileNav && <button type="button" aria-label="Close navigation" onClick={() => setMobileNav(false)} className="fixed inset-0 z-30 bg-[#162039]/40 md:hidden" data-testid="button-mobile-nav-overlay" />}
       <main className="main-content">
-        <header className="topbar"><div className="flex items-center gap-3"><button type="button" onClick={() => setMobileNav(true)} className="icon-button md:hidden" data-testid="button-open-mobile-nav"><Menu size={20} /></button><div className="hidden h-8 w-px bg-border md:block" /><p className="eyebrow hidden sm:block">Tuesday · October 15, 2024</p></div><div className="flex items-center gap-2"><button type="button" onClick={refresh} className="icon-button" aria-label="Refresh dashboard" data-testid="button-refresh-dashboard"><RefreshCw size={16} className={summaryQuery.isFetching ? 'animate-spin' : ''} /></button><button type="button" onClick={openCreate} className="button button-primary button-small" data-testid="button-add-task-top"><Plus size={16} /> <span className="hidden sm:inline">New task</span></button></div></header>
+        <header className="topbar"><div className="flex items-center gap-3"><button type="button" onClick={() => setMobileNav(true)} className="icon-button md:hidden" data-testid="button-open-mobile-nav"><Menu size={20} /></button><div className="hidden h-8 w-px bg-border md:block" /><p className="eyebrow hidden sm:block">{getTodayLabel()}</p></div><div className="flex items-center gap-2"><button type="button" onClick={refresh} className="icon-button" aria-label="Refresh dashboard" data-testid="button-refresh-dashboard"><RefreshCw size={16} className={summaryQuery.isFetching ? 'animate-spin' : ''} /></button><button type="button" onClick={openCreate} className="button button-primary button-small" data-testid="button-add-task-top"><Plus size={16} /> <span className="hidden sm:inline">New task</span></button></div></header>
         <div className="content-wrap">
           <section className="hero-row"><div><p className="eyebrow text-[#a87522]">{getGreeting()}, Lipika</p><h1 className="hero-title">Make today<br /><em>count.</em></h1><p className="hero-subtitle">A clear mind starts with a clear next step.</p></div><div className="hero-note"><div className="hero-note-line" /><p>“The secret of getting ahead is getting started.”</p><span>— Mark Twain</span></div></section>
           <section className="stats-grid" aria-label="Study progress">

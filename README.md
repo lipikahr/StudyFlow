@@ -1,4 +1,4 @@
-# StudyFlow
+# StudyFlow-built using Replit
 
 StudyFlow is a personal study and task management workspace for turning coursework, DSA practice, projects, placement preparation, and everyday goals into steady daily progress.
 

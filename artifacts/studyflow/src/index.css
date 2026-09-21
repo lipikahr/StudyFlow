@@ -453,7 +453,7 @@ button:disabled { cursor: not-allowed; opacity: .62; }
 .sidebar-bottom { margin-top: auto; }
 .focus-card { border: 1px solid hsl(var(--sidebar-foreground) / .12); border-radius: 13px; padding: 14px; background: hsl(var(--sidebar-foreground) / .045); }
 .main-content { min-height: 100dvh; margin-left: 244px; }
-.topbar { display: flex; min-height: 76px; align-items: center; justify-content: space-between; border-bottom: 1px solid hsl(var(--border)); padding: 0 4.5vw; }
+.topbar { display: flex; min-height: 62px; align-items: center; justify-content: space-between; border-bottom: 1px solid hsl(var(--border)); padding: 0 3.5vw; }
 .content-wrap { max-width: 1440px; margin: 0 auto; padding: 46px 4.5vw 30px; }
 .eyebrow { color: hsl(var(--muted-foreground)); font-family: var(--app-font-mono); font-size: 10px; font-weight: 500; letter-spacing: .15em; text-transform: uppercase; }
 .hero-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }

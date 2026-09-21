@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "StudyFlow"
+description = "A personal study and task management app for organizing academic goals, tracking priorities, and building consistent progress across DSA, projects, placement, and everyday life."
+version = "1.0.0"
+id = "artifacts/studyflow"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18966
+
+[services.development]
+run = "pnpm --filter @workspace/studyflow run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/studyflow", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/studyflow/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18966"
+BASE_PATH = "/"

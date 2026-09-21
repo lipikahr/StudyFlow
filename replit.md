@@ -1,6 +1,6 @@
-# [Project name]
+# StudyFlow
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+StudyFlow is a personal study and task management app for organizing goals, priorities, and progress across five life areas.
 
 ## Run & Operate
 
@@ -22,23 +22,36 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `lib/api-spec/openapi.yaml` — source of truth for task CRUD, completion toggles, filters, and dashboard summary endpoints
+- `lib/db/src/schema/tasks.ts` — PostgreSQL task table and insert schema
+- `artifacts/api-server/src/routes/tasks.ts` — Express route handlers and dashboard aggregation
+- `artifacts/studyflow/src/pages/dashboard.tsx` — responsive dashboard workspace
+- `artifacts/studyflow/src/components/task-dialog.tsx` — add/edit task form
+- `artifacts/studyflow/src/index.css` — StudyFlow theme tokens and visual system
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Tasks are persisted in the shared PostgreSQL database through Drizzle ORM; the browser only owns transient UI state.
+- OpenAPI is the contract for backend routes and generated React Query hooks.
+- Completion is represented by both a boolean and a timestamp so the dashboard can show state and completion history.
+- The single dashboard route owns the first-build surface; filters and CRUD interactions stay in the same focused workspace.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Dashboard totals, completion rate, high-priority active count, category progress, and upcoming tasks
+- Task create, edit, delete, and completion toggle flows
+- Search, status, category, and sort filtering
+- Responsive desktop and mobile layouts with starter study tasks seeded for first load
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+No additional preferences recorded.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Run API codegen after changing `lib/api-spec/openapi.yaml`.
+- Run `pnpm --filter @workspace/db run push` after changing the Drizzle schema.
+- Use the managed artifact workflows for preview; the frontend calls the API through the shared `/api` path.
 
 ## Pointers
 

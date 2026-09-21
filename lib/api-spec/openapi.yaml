@@ -10,6 +10,10 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: tasks
+    description: Study and task management operations
+  - name: dashboard
+    description: Dashboard summaries and aggregates
 paths:
   /healthz:
     get:
@@ -24,7 +28,175 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /tasks:
+    get:
+      operationId: listTasks
+      tags: [tasks]
+      summary: List tasks
+      description: Returns tasks with optional search, category, and completion filters
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/TaskCategory"
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/TaskStatus"
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [priority, dueDate, newest]
+            default: priority
+      responses:
+        "200":
+          description: Task list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    post:
+      operationId: createTask
+      tags: [tasks]
+      summary: Create a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskInput"
+      responses:
+        "201":
+          description: Created task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          description: Invalid task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /tasks/{id}:
+    get:
+      operationId: getTask
+      tags: [tasks]
+      summary: Get a task
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      responses:
+        "200":
+          description: Task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateTask
+      tags: [tasks]
+      summary: Update a task
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdate"
+      responses:
+        "200":
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          description: Invalid task update
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteTask
+      tags: [tasks]
+      summary: Delete a task
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      responses:
+        "204":
+          description: Task deleted
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /tasks/{id}/toggle:
+    patch:
+      operationId: toggleTask
+      tags: [tasks]
+      summary: Toggle task completion
+      parameters:
+        - $ref: "#/components/parameters/TaskId"
+      responses:
+        "200":
+          description: Toggled task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary
+      description: Returns completion totals, priority totals, category progress, and upcoming tasks
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
 components:
+  parameters:
+    TaskId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
   schemas:
     HealthStatus:
       type: object
@@ -33,4 +205,121 @@ components:
           type: string
       required:
         - status
+    TaskCategory:
+      type: string
+      enum: [DSA, Academics, Projects, Placement, Personal]
+    TaskPriority:
+      type: string
+      enum: [low, medium, high]
+    TaskStatus:
+      type: string
+      enum: [all, active, completed]
+    Task:
+      type: object
+      required: [id, title, category, priority, completed, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        category:
+          $ref: "#/components/schemas/TaskCategory"
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+        dueDate:
+          type: ["string", "null"]
+          format: date
+        completed:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: ["string", "null"]
+          format: date-time
+    TaskInput:
+      type: object
+      required: [title, category, priority]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 160
+        description:
+          type: string
+          maxLength: 1000
+        category:
+          $ref: "#/components/schemas/TaskCategory"
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+        dueDate:
+          type: string
+          format: date
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 160
+        description:
+          type: string
+          maxLength: 1000
+        category:
+          $ref: "#/components/schemas/TaskCategory"
+        priority:
+          $ref: "#/components/schemas/TaskPriority"
+        dueDate:
+          type: ["string", "null"]
+          format: date
+        completed:
+          type: boolean
+    CategorySummary:
+      type: object
+      required: [category, total, completed, active]
+      properties:
+        category:
+          $ref: "#/components/schemas/TaskCategory"
+        total:
+          type: integer
+        completed:
+          type: integer
+        active:
+          type: integer
+    UpcomingTask:
+      allOf:
+        - $ref: "#/components/schemas/Task"
+    DashboardSummary:
+      type: object
+      required: [total, completed, active, completionRate, highPriorityActive, categorySummaries, upcoming]
+      properties:
+        total:
+          type: integer
+        completed:
+          type: integer
+        active:
+          type: integer
+        completionRate:
+          type: number
+        highPriorityActive:
+          type: integer
+        categorySummaries:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategorySummary"
+        upcoming:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
 
